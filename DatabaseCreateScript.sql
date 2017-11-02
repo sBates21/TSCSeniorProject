@@ -64,7 +64,7 @@ ALTER TABLE [dbo].[Addresses]  WITH CHECK ADD  CONSTRAINT [FK_Addresses_Users] F
 REFERENCES [dbo].[Users] ([ID])
 GO
 
--- Roles table stores various roles a consultant can fill on a translation project. 
+-- Roles table stores the role(s) a consultant can fill on a translation project. 
 CREATE TABLE [dbo].[Roles](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[DisplayName] [nvarchar](100) NULL,
@@ -74,7 +74,7 @@ CREATE TABLE [dbo].[Roles](
 	)
 GO
 
--- Consultant_Roles table stores associations between consultants and they roles they have served on projects. 
+-- Consultant_Roles table stores associations between consultants and the role(s) they have served on projects. 
 CREATE TABLE [dbo].[Consultant_Roles](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[UserID] [int] NOT NULL,
@@ -91,6 +91,34 @@ GO
 -- RoleID in Consultant_Roles table is foreign key referencing ID field of Roles table.
 ALTER TABLE [dbo].[Consultant_Roles]  WITH CHECK ADD  CONSTRAINT [FK_Consultant_Roles_Roles] FOREIGN KEY([RoleID])
 REFERENCES [dbo].[Roles] ([ID])
+GO
+
+-- Testaments table stores the testament(s) a consultant has worked with on translation projects. 
+CREATE TABLE [dbo].[Testaments](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[DisplayName] [nvarchar](100) NULL,
+	[IsActive] [bit] NOT NULL,
+	PRIMARY KEY(ID)
+	)
+GO
+
+-- Consultant_Testaments table stores associations between consultants and the testament(s) they've worked with on projects. 
+CREATE TABLE [dbo].[Consultant_Testaments](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NOT NULL,
+	[TestamentID] [int] NOT NULL,
+	PRIMARY KEY(ID)
+	)
+GO
+
+-- UserID in Consultant_Testaments table is foreign key referencing ID field of Users table.
+ALTER TABLE [dbo].[Consultant_Testaments]  WITH CHECK ADD  CONSTRAINT [FK_Consultant_Testaments_Users] FOREIGN KEY([UserID])
+REFERENCES [dbo].[Users] ([ID])
+GO
+
+-- TestamentID in Consultant_Testaments table is foreign key referencing ID field of Testaments table.
+ALTER TABLE [dbo].[Consultant_Testaments]  WITH CHECK ADD  CONSTRAINT [FK_Consultant_Testaments_Testaments] FOREIGN KEY([TestamentID])
+REFERENCES [dbo].[Testaments] ([ID])
 GO
 
 -- Sample stored procedure in SQL Server. May or may not decide to use stored procedures for database functions in final application.
