@@ -1,9 +1,11 @@
--- Create script for The Seed Company Senior Project database
+-- Create script for The Seed Company Senior Project database (TSCSeniorProject) tables.
+-- Authors: Sean Bates, Jordan Brown
 -- Refer to database schema and other documentation for more detailed database information. 
 
 USE [TSCSeniorProject]
 GO
 
+-- Organizations table stores translation consulting companies under which consultants and field coordinators work.
 CREATE TABLE [dbo].[Organizations](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[DisplayName] [nvarchar](100) NOT NULL,
@@ -12,6 +14,7 @@ CREATE TABLE [dbo].[Organizations](
 	)
 GO
 
+-- UserRoles table stores various types of users for permission purposes.
 CREATE TABLE [dbo].[UserRoles](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[DisplayName] [nvarchar](100) NOT NULL,
@@ -20,6 +23,7 @@ CREATE TABLE [dbo].[UserRoles](
 	)
 GO
 
+-- Users table will include all users of the system regardless of organization or role. 
 CREATE TABLE [dbo].[Users](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[UserRoleID] [int] NOT NULL,
@@ -32,14 +36,17 @@ CREATE TABLE [dbo].[Users](
 	)
 GO
 
+-- OrganizationID in users table is foreign key referencing ID field of Organizations table.
 ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Organizations] FOREIGN KEY([OrganizationID])
 REFERENCES [dbo].[Organizations] ([ID])
 GO
 
+-- UserRoleID in users table is foreign key referencing ID field of UserRoles table.
 ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_UserRoles] FOREIGN KEY([UserRoleID])
 REFERENCES [dbo].[UserRoles] ([ID])
 GO
 
+-- Addresses table stores mailing addresses for users, allowing each user to store multiple addresses.
 CREATE TABLE [dbo].[Addresses](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[UserID] [int] NOT NULL,
@@ -52,10 +59,41 @@ CREATE TABLE [dbo].[Addresses](
 	)
 GO
 
+-- UserID in adresses table is foreign key referencing ID field of Users table.
 ALTER TABLE [dbo].[Addresses]  WITH CHECK ADD  CONSTRAINT [FK_Addresses_Users] FOREIGN KEY([UserID])
 REFERENCES [dbo].[Users] ([ID])
 GO
 
+-- Roles table stores various roles a consultant can fill on a translation project. 
+CREATE TABLE [dbo].[Roles](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[DisplayName] [nvarchar](100) NULL,
+	[Description] [nvarchar](1000) NULL,
+	[IsActive] [bit] NOT NULL,
+	PRIMARY KEY(ID)
+	)
+GO
+
+-- Consultant_Roles table stores associations between consultants and they roles they have served on projects. 
+CREATE TABLE [dbo].[Consultant_Roles](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NOT NULL,
+	[RoleID] [int] NOT NULL,
+	PRIMARY KEY(ID)
+	)
+GO
+
+-- UserID in Consultant_Roles table is foreign key referencing ID field of Users table.
+ALTER TABLE [dbo].[Consultant_Roles]  WITH CHECK ADD  CONSTRAINT [FK_Consultant_Roles_Users] FOREIGN KEY([UserID])
+REFERENCES [dbo].[Users] ([ID])
+GO
+
+-- RoleID in Consultant_Roles table is foreign key referencing ID field of Roles table.
+ALTER TABLE [dbo].[Consultant_Roles]  WITH CHECK ADD  CONSTRAINT [FK_Consultant_Roles_Roles] FOREIGN KEY([RoleID])
+REFERENCES [dbo].[Roles] ([ID])
+GO
+
+-- Sample stored procedure in SQL Server. May or may not decide to use stored procedures for database functions in final application.
 CREATE PROCEDURE [dbo].[InsertUser]
 (
 	@UserRoleID int = 1,
