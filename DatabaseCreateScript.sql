@@ -40,6 +40,22 @@ ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_UserRoles] FOREI
 REFERENCES [dbo].[UserRoles] ([ID])
 GO
 
+CREATE TABLE [dbo].[Addresses](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NOT NULL,
+	[Address] [nvarchar](100) NULL,
+	[City] [nvarchar](100) NULL,
+	[State] [nvarchar](100) NULL,
+	[Zip] [int] NULL,
+	[IsActive] [bit] NOT NULL,
+	PRIMARY KEY(ID)
+	)
+GO
+
+ALTER TABLE [dbo].[Addresses]  WITH CHECK ADD  CONSTRAINT [FK_Addresses_Users] FOREIGN KEY([UserID])
+REFERENCES [dbo].[Users] ([ID])
+GO
+
 CREATE PROCEDURE [dbo].[InsertUser]
 (
 	@UserRoleID int = 1,
